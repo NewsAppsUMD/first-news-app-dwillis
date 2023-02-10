@@ -10,18 +10,20 @@
     </head>
     <body>
         <div id="map" style="width:100%; height:300px;"></div>
-        <h1>Baltimore 911 Overdose Calls</h1>
+        <h1>One Week of Baltimore 911 Overdose Calls</h1>
         <table border=1 cellpadding=7>
             <tr>
-                <th>Date</th>
                 <th>Number</th>
+                <th>Date</th>
+                <th>Time</th>
                 <th>Address</th>
                 <th>Neighborhood</th>
             </tr>
             {% for obj in object_list %}
             <tr>
                 <td><a href="{{ obj.callNumber }}/">{{ obj.callNumber }}</a></td>
-                <td>{{ obj.callDateTime }}</td>
+                <td>{{ obj.date }}</td>
+                <td>{{ obj.time }}</td>
                 <td>{{ obj.location }}</td>
                 <td>{{ obj.Neighborhood }}</td>
             </tr>
