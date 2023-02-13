@@ -1,5 +1,6 @@
 import csv
 from flask import Flask
+from flask import abort
 from flask import render_template
 app = Flask(__name__)
 
@@ -15,6 +16,15 @@ def index():
     template = 'index.html'
     object_list = get_csv()
     return render_template(template, object_list=object_list)
+
+@app.route('/<call_number>/')
+def detail(call_number):
+    template = 'detail.html'
+    object_list = get_csv()
+    for row in object_list:
+        if row['callNumber'] == call_number:
+            return render_template(template, object=row)
+    abort(404)
 
 if __name__ == '__main__':
     # Fire up the Flask test server
