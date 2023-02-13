@@ -5,7 +5,7 @@ freezer = Freezer(app)
 @freezer.register_generator
 def detail():
     for row in get_csv():
-        yield {'row_id': row['callNumber']}
+        yield {'call_number': row['callNumber']}
 
 if __name__ == '__main__':
     freezer.freeze()

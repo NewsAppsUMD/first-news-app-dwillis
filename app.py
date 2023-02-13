@@ -17,12 +17,12 @@ def index():
     object_list = get_csv()
     return render_template(template, object_list=object_list)
 
-@app.route('/<row_id>/')
-def detail(row_id):
+@app.route('/<call_number>/')
+def detail(call_number):
     template = 'detail.html'
     object_list = get_csv()
     for row in object_list:
-        if row['callNumber'] == row_id:
+        if row['callNumber'] == call_number:
             return render_template(template, object=row)
     abort(404)
 
