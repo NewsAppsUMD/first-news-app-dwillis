@@ -1,25 +1,73 @@
 <!doctype html>
 <html lang="en">
-    <head></head>
-    <body>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <link rel="stylesheet" href="//cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="//cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <script src="static/leaflet-heat.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="https://first-news-app-umd.readthedocs.org/">
+            <img src="{{ url_for('static', filename='shell.png') }}">
+        </a>
+    </nav>
+    <header>
         <h1>One Week of Baltimore 911 Overdose Calls</h1>
-        <table border=1 cellpadding=7>
-            <tr>
-                <th>Call Number</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th>Neighborhood</th>
-            </tr>
+            <div class="byline">
+                By <a href="https://first-news-app-umd.readthedocs.org/">The First News App Tutorial</a>
+            </div>
+        </header>
+    <div id="map" style="width:100%; height:300px;"></div>
+    <table id="calls" border=1 cellpadding=7>
+        <thead>
+           <tr>
+            <th>Call Number</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Neighborhood</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td><a href="{{ obj.callNumber }}/">{{ obj.callNumber }}</a></td>
+            <td>{{ obj.date }}</td>
+            <td>{{ obj.time }}</td>
+            <td>{{ obj.location }}</td>
+            <td>{{ obj.Neighborhood }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <script type="text/javascript">
+        let table = new DataTable('#calls', {paging: false, scrollY: 400});
+    </script>
+    <script type="text/javascript">
+        var map = L.map('map').setView([39.3, -76.5], 11);
+        var osmLayer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Data, imagery and map information provided by <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>.'
+        });
+        map.addLayer(osmLayer);
+        function onEachFeature(feature, layer) {
+            // does this feature have a property named popupContent?
+            if (feature.properties && feature.properties.popupContent) {
+                layer.bindPopup('<a href="'+ feature.properties.id + '/">' + feature.properties.popupContent + '</a>');
+            }
+        }
+        var heatdata = [
             {% for obj in object_list %}
-            <tr>
-                <td>{{ obj.callNumber }}</td>
-                <td>{{ obj.date }}</td>
-                <td>{{ obj.time }}</td>
-                <td>{{ obj.location }}</td>
-                <td>{{ obj.Neighborhood }}</td>
-            </tr>
+                [{{obj.lat}}, {{obj.lng}}, 0.2]
+            {% if not loop.last %},{% endif %}
             {% endfor %}
-        </table>
+          ];
+        var heat = L.heatLayer(heatdata).addTo(map);
+        </script>
     </body>
 </html>
